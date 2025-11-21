@@ -47,13 +47,15 @@ st.markdown("---")
 st.sidebar.title("Navigation")
 page = st.sidebar.radio(
     "Choose a section:",
-    [
-        "Fetch Products from Platzi",
-        "Write to Supabase",
-        "Read from Supabase",
-        "Update Supabase",
-        "Delete from Supabase"
-    ]
+   "Navigate The Digital Goddess Luxe",
+[
+    "✨ Step into the Luxe Product Library",
+    "💖 Add Your Data to the Goddess Vault",
+    "🔎 Retrieve What You’ve Stored",
+    "🧘‍♀️ Polish & Update Your Records",
+    "🕊️ Release Items with Grace"
+]
+
 )
 
 # ====================================
