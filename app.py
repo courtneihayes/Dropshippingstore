@@ -8,7 +8,7 @@ from datetime import datetime
 # SUPABASE CREDENTIALS - REPLACE THESE
 # ====================================
 SUPABASE_URL = "https://kwxsnefimgoxypobbrgr.supabase.co"
-SUPABASE_KEY = "eeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3eHNuZWZpbWdveHlwb2JicmdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2ODMwMzUsImV4cCI6MjA3OTI1OTAzNX0.yoXJUjChHiIT6NrdA6OTaB0Fn6nLnRVGjJCQvLgrl3s"
+SUPABASE_KEY = "sb_publishable_MSmQunHItsa1NGhLOVTNDA_S6vFVn8s"
 
 # ====================================
 # TABLE NAME - Change to match your Supabase table
