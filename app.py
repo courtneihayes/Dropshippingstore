@@ -7,8 +7,13 @@ from datetime import datetime
 # ====================================
 # SUPABASE CREDENTIALS - REPLACE THESE
 # ====================================
-SUPABASE_URL = "https://kwxsnefimgoxypobbrgr.supabase.co"  # Example: https://xxxxxxxxxxxxx.supabase.co
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3eHNuZWZpbWdveHlwb2JicmdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2ODMwMzUsImV4cCI6MjA3OTI1OTAzNX0.yoXJUjChHiIT6NrdA6OTaB0Fn6nLnRVGjJCQvLgrl3s"  # Your anon/public key
+SUPABASE_URL = "https://kwxsnefimgoxypobbrgr.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3eHNuZWZpbWdveHlwb2JicmdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxNDI2NzMsImV4cCI6MjA0NzcxODY3M30.VV8wluBmxe2TH9wOGFu09jQgm0G9DY3WgmENwJhq67s"
+
+# ====================================
+# TABLE NAME - Change to match your Supabase table
+# ====================================
+TABLE_NAME = "product"  # Changed to singular "product"
 
 # ====================================
 # INITIALIZE SUPABASE CLIENT
@@ -106,7 +111,7 @@ if page == "Fetch Products from Platzi":
 elif page == "Write to Supabase":
     st.header("✍️ Write to Supabase")
     
-    st.info("💡 Insert new records into your Supabase database")
+    st.info(f"💡 Insert new records into your '{TABLE_NAME}' table")
     
     tab1, tab2 = st.tabs(["Manual Entry", "Bulk Insert from API"])
     
@@ -135,7 +140,7 @@ elif page == "Write to Supabase":
                             "created_at": datetime.now().isoformat()
                         }
                         
-                        result = supabase.table("products").insert(data).execute()
+                        result = supabase.table(TABLE_NAME).insert(data).execute()
                         st.success("✅ Product written to Supabase successfully!")
                         st.json(result.data)
                     
@@ -171,7 +176,7 @@ elif page == "Write to Supabase":
                                     "created_at": datetime.now().isoformat()
                                 }
                                 
-                                supabase.table("products").insert(data).execute()
+                                supabase.table(TABLE_NAME).insert(data).execute()
                                 success_count += 1
                             
                             except Exception as e:
@@ -201,7 +206,7 @@ elif page == "Write to Supabase":
 elif page == "Read from Supabase":
     st.header("📖 Read from Supabase")
     
-    st.info("💡 Query and retrieve records from your Supabase database")
+    st.info(f"💡 Query and retrieve records from your '{TABLE_NAME}' table")
     
     tab1, tab2, tab3, tab4 = st.tabs(["All Records", "Filter by ID", "Filter by Price", "Search by Name"])
     
@@ -216,7 +221,7 @@ elif page == "Read from Supabase":
                 st.rerun()
         
         try:
-            response = supabase.table("products").select("*").execute()
+            response = supabase.table(TABLE_NAME).select("*").execute()
             
             if response.data:
                 st.success(f"📊 Found **{len(response.data)}** products in database")
@@ -247,7 +252,7 @@ elif page == "Read from Supabase":
         
         if st.button("🔍 Read by ID", type="primary"):
             try:
-                response = supabase.table("products").select("*").eq("id", product_id).execute()
+                response = supabase.table(TABLE_NAME).select("*").eq("id", product_id).execute()
                 
                 if response.data:
                     st.success(f"✅ Found product with ID: {product_id}")
@@ -287,7 +292,7 @@ elif page == "Read from Supabase":
         
         if st.button("🔍 Read by Price Range", type="primary"):
             try:
-                response = supabase.table("products").select("*").gte("price", min_price).lte("price", max_price).execute()
+                response = supabase.table(TABLE_NAME).select("*").gte("price", min_price).lte("price", max_price).execute()
                 
                 if response.data:
                     st.success(f"📊 Found **{len(response.data)}** products between ${min_price} and ${max_price}")
@@ -309,7 +314,7 @@ elif page == "Read from Supabase":
         if st.button("🔍 Search", type="primary"):
             if search_term:
                 try:
-                    response = supabase.table("products").select("*").ilike("title", f"%{search_term}%").execute()
+                    response = supabase.table(TABLE_NAME).select("*").ilike("title", f"%{search_term}%").execute()
                     
                     if response.data:
                         st.success(f"📊 Found **{len(response.data)}** products matching '{search_term}'")
@@ -330,13 +335,13 @@ elif page == "Read from Supabase":
 elif page == "Update Supabase":
     st.header("✏️ Update Supabase Records")
     
-    st.info("💡 Modify existing records in your Supabase database")
+    st.info(f"💡 Modify existing records in your '{TABLE_NAME}' table")
     
     # First, select product to update
     st.subheader("Step 1: Select Product to Update")
     
     try:
-        response = supabase.table("products").select("id, title").execute()
+        response = supabase.table(TABLE_NAME).select("id, title").execute()
         
         if response.data:
             product_options = {f"{p['id']} - {p['title']}": p['id'] for p in response.data}
@@ -346,7 +351,7 @@ elif page == "Update Supabase":
             
             if st.button("📖 Load Product Data"):
                 # Fetch full product data
-                product_response = supabase.table("products").select("*").eq("id", selected_id).execute()
+                product_response = supabase.table(TABLE_NAME).select("*").eq("id", selected_id).execute()
                 
                 if product_response.data:
                     st.session_state['update_product'] = product_response.data[0]
@@ -378,7 +383,7 @@ elif page == "Update Supabase":
                                 "image_url": new_image_url if new_image_url else None
                             }
                             
-                            result = supabase.table("products").update(updated_data).eq("id", selected_id).execute()
+                            result = supabase.table(TABLE_NAME).update(updated_data).eq("id", selected_id).execute()
                             st.success(f"✅ Product ID {selected_id} updated successfully!")
                             st.json(result.data)
                             
@@ -400,7 +405,7 @@ elif page == "Update Supabase":
 elif page == "Delete from Supabase":
     st.header("🗑️ Delete from Supabase")
     
-    st.info("💡 Remove records from your Supabase database")
+    st.info(f"💡 Remove records from your '{TABLE_NAME}' table")
     
     tab1, tab2 = st.tabs(["Delete by ID", "Delete All"])
     
@@ -409,7 +414,7 @@ elif page == "Delete from Supabase":
         st.subheader("Delete Single Product")
         
         try:
-            response = supabase.table("products").select("*").execute()
+            response = supabase.table(TABLE_NAME).select("*").execute()
             
             if response.data:
                 st.write(f"📊 Total products: **{len(response.data)}**")
@@ -421,7 +426,7 @@ elif page == "Delete from Supabase":
                 
                 if st.button("🗑️ Delete Selected Product", type="primary"):
                     try:
-                        supabase.table("products").delete().eq("id", selected_id).execute()
+                        supabase.table(TABLE_NAME).delete().eq("id", selected_id).execute()
                         st.success(f"✅ Product ID {selected_id} deleted successfully!")
                         st.rerun()
                     except Exception as e:
@@ -438,7 +443,7 @@ elif page == "Delete from Supabase":
         st.warning("🚨 This will permanently delete ALL products from the database!")
         
         try:
-            response = supabase.table("products").select("id").execute()
+            response = supabase.table(TABLE_NAME).select("id").execute()
             
             if response.data:
                 st.write(f"📊 Total products to delete: **{len(response.data)}**")
@@ -452,7 +457,7 @@ elif page == "Delete from Supabase":
                             status_text = st.empty()
                             
                             for idx, product in enumerate(response.data):
-                                supabase.table("products").delete().eq("id", product['id']).execute()
+                                supabase.table(TABLE_NAME).delete().eq("id", product['id']).execute()
                                 
                                 progress = (idx + 1) / len(response.data)
                                 progress_bar.progress(progress)
@@ -475,4 +480,4 @@ elif page == "Delete from Supabase":
 # FOOTER
 # ====================================
 st.sidebar.markdown("---")
-st.sidebar.info("💡 **Database Operations:**\n\n✍️ Write - Insert new records\n\n📖 Read - Query records\n\n✏️ Update - Modify records\n\n🗑️ Delete - Remove records")
+st.sidebar.info(f"💡 **Table:** {TABLE_NAME}\n\n✍️ Write - Insert new records\n\n📖 Read - Query records\n\n✏️ Update - Modify records\n\n🗑️ Delete - Remove records")
