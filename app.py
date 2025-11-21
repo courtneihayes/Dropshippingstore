@@ -14,7 +14,7 @@ SUPABASE_KEY = "sb_publishable_MSmQunHItsa1NGhLOVTNDA_S6vFVn8s"  # Your anon/pub
 # INITIALIZE SUPABASE CLIENT
 # ====================================
 try:
-    supabase: Client = create_client(https://kwxsnefimgoxypobbrgr.supabase.co, sb_publishable_MSmQunHItsa1NGhLOVTNDA_S6vFVn8s)
+    supabase: Client = create_client(https://kwxsnefimgoxypobbrgr.supabase.co, eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3eHNuZWZpbWdveHlwb2JicmdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2ODMwMzUsImV4cCI6MjA3OTI1OTAzNX0.yoXJUjChHiIT6NrdA6OTaB0Fn6nLnRVGjJCQvLgrl3s)
 except Exception as e:
     st.error(f"Failed to connect to Supabase: {e}")
     st.stop()
