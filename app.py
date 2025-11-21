@@ -8,13 +8,13 @@ from datetime import datetime
 # SUPABASE CREDENTIALS - REPLACE THESE
 # ====================================
 SUPABASE_URL = "https://kwxsnefimgoxypobbrgr.supabase.co"  # Example: https://xxxxxxxxxxxxx.supabase.co
-SUPABASE_KEY = "sb_publishable_MSmQunHItsa1NGhLOVTNDA_S6vFVn8s"  # Your anon/public key
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3eHNuZWZpbWdveHlwb2JicmdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2ODMwMzUsImV4cCI6MjA3OTI1OTAzNX0.yoXJUjChHiIT6NrdA6OTaB0Fn6nLnRVGjJCQvLgrl3s"  # Your anon/public key
 
 # ====================================
 # INITIALIZE SUPABASE CLIENT
 # ====================================
 try:
-    supabase: Client = create_client(https://kwxsnefimgoxypobbrgr.supabase.co, eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3eHNuZWZpbWdveHlwb2JicmdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2ODMwMzUsImV4cCI6MjA3OTI1OTAzNX0.yoXJUjChHiIT6NrdA6OTaB0Fn6nLnRVGjJCQvLgrl3s)
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 except Exception as e:
     st.error(f"Failed to connect to Supabase: {e}")
     st.stop()
@@ -406,3 +406,73 @@ elif page == "Delete from Supabase":
     
     # TAB 1: Delete by ID
     with tab1:
+        st.subheader("Delete Single Product")
+        
+        try:
+            response = supabase.table("products").select("*").execute()
+            
+            if response.data:
+                st.write(f"📊 Total products: **{len(response.data)}**")
+                
+                product_options = {f"{p['id']} - {p['title']}": p['id'] for p in response.data}
+                
+                selected_product = st.selectbox("Select Product to Delete:", list(product_options.keys()))
+                selected_id = product_options[selected_product]
+                
+                if st.button("🗑️ Delete Selected Product", type="primary"):
+                    try:
+                        supabase.table("products").delete().eq("id", selected_id).execute()
+                        st.success(f"✅ Product ID {selected_id} deleted successfully!")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"❌ Error deleting product: {e}")
+            else:
+                st.info("📭 No products in database to delete")
+        
+        except Exception as e:
+            st.error(f"❌ Error fetching products: {e}")
+    
+    # TAB 2: Delete All
+    with tab2:
+        st.subheader("⚠️ Danger Zone")
+        st.warning("🚨 This will permanently delete ALL products from the database!")
+        
+        try:
+            response = supabase.table("products").select("id").execute()
+            
+            if response.data:
+                st.write(f"📊 Total products to delete: **{len(response.data)}**")
+                
+                confirm = st.checkbox("⚠️ I understand this action cannot be undone")
+                
+                if confirm:
+                    if st.button("🗑️ Delete All Products", type="secondary"):
+                        try:
+                            progress_bar = st.progress(0)
+                            status_text = st.empty()
+                            
+                            for idx, product in enumerate(response.data):
+                                supabase.table("products").delete().eq("id", product['id']).execute()
+                                
+                                progress = (idx + 1) / len(response.data)
+                                progress_bar.progress(progress)
+                                status_text.text(f"Deleting: {idx + 1}/{len(response.data)}")
+                            
+                            progress_bar.empty()
+                            status_text.empty()
+                            
+                            st.success("✅ All products deleted successfully!")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"❌ Error deleting products: {e}")
+            else:
+                st.info("📭 No products in database to delete")
+        
+        except Exception as e:
+            st.error(f"❌ Error fetching products: {e}")
+
+# ====================================
+# FOOTER
+# ====================================
+st.sidebar.markdown("---")
+st.sidebar.info("💡 **Database Operations:**\n\n✍️ Write - Insert new records\n\n📖 Read - Query records\n\n✏️ Update - Modify records\n\n🗑️ Delete - Remove records")
